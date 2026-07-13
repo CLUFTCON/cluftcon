@@ -31,7 +31,10 @@ export function AshiyuQuote() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const userAgent = window.navigator.userAgent
     const isSafari = /Safari/i.test(userAgent) && !/(Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|Android)/i.test(userAgent)
+    const isFirefox = /(Firefox|FxiOS)/i.test(userAgent)
+    const usesLightweightWater = isSafari || isFirefox
     scene.classList.toggle('is-safari', isSafari)
+    scene.classList.toggle('is-firefox', isFirefox)
     let active = true
     let scrollTimeline: gsap.core.Timeline | undefined
     let causticTimeline: gsap.core.Timeline | undefined
@@ -55,7 +58,7 @@ export function AshiyuQuote() {
         return
       }
 
-      if (!isSafari) {
+      if (!usesLightweightWater) {
         causticTimeline = gsap.timeline({ repeat: -1, yoyo: true })
           .to('.ashiyu-caustic-field', { xPercent: 4, yPercent: 2.5, scale: 1.035, duration: 8, ease: 'sine.inOut' }, 0)
           .to('.ashiyu-caustic-noise', { attr: { baseFrequency: '.016 .034' }, duration: 8, ease: 'sine.inOut' }, 0)
@@ -68,7 +71,7 @@ export function AshiyuQuote() {
           end: '+=100%',
           pin: stage,
           pinSpacing: true,
-          scrub: isSafari ? true : .65,
+          scrub: usesLightweightWater ? true : .65,
           anticipatePin: 1,
           pinType: 'fixed',
           invalidateOnRefresh: true,
@@ -99,6 +102,7 @@ export function AshiyuQuote() {
       causticTimeline?.kill()
       context.revert()
       scene.classList.remove('is-safari')
+      scene.classList.remove('is-firefox')
     }
   }, [])
 
