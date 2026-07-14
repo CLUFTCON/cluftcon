@@ -113,9 +113,20 @@ export function AshiyuQuote() {
         <span className="ashiyu-caption" aria-hidden>ASHIYU · FOOTBATH</span>
 
         <div className="ashiyu-pavilion" aria-hidden>
-          <i className="ashiyu-beam ashiyu-beam-top" />
-          <i className="ashiyu-beam ashiyu-beam-left" />
-          <i className="ashiyu-beam ashiyu-beam-right" />
+          <svg className="ashiyu-timber-frame" viewBox="0 0 1180 620" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="ashiyu-timber" x1="0" y1="0" x2="1" y2=".2">
+                <stop stopColor="#604b3e" />
+                <stop offset=".48" stopColor="#88705d" />
+                <stop offset="1" stopColor="#574438" />
+              </linearGradient>
+            </defs>
+            <path className="timber-post" d="M210 70 L242 74 L258 620 L219 620 Z" />
+            <path className="timber-post" d="M938 74 L970 70 L961 620 L922 620 Z" />
+            <path className="timber-lintel timber-lintel-top" d="M-35 50 Q590 104 1215 50 L1209 64 Q590 118 -29 64 Z" />
+            <path className="timber-lintel timber-lintel-lower" d="M68 132 Q590 150 1112 132 L1112 140 Q590 158 68 140 Z" />
+            <path className="timber-seam" d="M194 66 L239 82 M942 81 L987 64 M324 82 L348 93 M832 93 L857 82" />
+          </svg>
           <span className="ashiyu-foliage ashiyu-foliage-left" />
           <span className="ashiyu-foliage ashiyu-foliage-right" />
         </div>
@@ -173,30 +184,34 @@ export function AshiyuQuote() {
         <svg className="ashiyu-stones" viewBox="0 400 1180 180" preserveAspectRatio="none" aria-hidden>
           <g className="stone-cluster stone-cluster-left">
             <g className="ashiyu-rock rock-one">
-              <path className="stone-body" d="M-23 503 L8 457 L63 431 L109 469 L92 512 L38 528 Z" />
-              <path className="stone-facet" d="M8 457 L63 431 L50 480 L-8 492 Z" />
+              <path className="stone-body" d="M-34 514 L-7 472 L28 430 L55 447 L105 483 L87 522 L17 530 Z" />
+              <path className="stone-facet" d="M-7 472 L28 430 L55 447 L38 486 L-18 500 Z" />
+              <path className="stone-facet stone-facet-soft" d="M55 447 L105 483 L87 522 L38 486 Z" />
             </g>
             <g className="ashiyu-rock rock-two">
-              <path className="stone-body" d="M66 511 L88 472 L136 454 L181 478 L194 507 L144 532 L94 527 Z" />
-              <path className="stone-facet" d="M88 472 L136 454 L151 493 L112 506 Z" />
+              <path className="stone-body" d="M62 520 L79 488 L121 474 L168 482 L202 505 L176 526 L99 532 Z" />
+              <path className="stone-facet" d="M79 488 L121 474 L168 482 L147 508 L98 515 Z" />
             </g>
             <g className="ashiyu-rock rock-three stone-detail">
-              <path className="stone-body" d="M159 501 L172 466 L211 448 L252 469 L261 497 L224 514 L184 512 Z" />
-              <path className="stone-facet" d="M172 466 L211 448 L221 483 L190 493 Z" />
+              <path className="stone-body" d="M160 518 L179 476 L214 437 L238 465 L268 507 L232 527 L184 528 Z" />
+              <path className="stone-facet" d="M179 476 L214 437 L221 486 L188 505 Z" />
+              <path className="stone-facet stone-facet-soft" d="M214 437 L238 465 L268 507 L221 486 Z" />
             </g>
           </g>
           <g className="stone-cluster stone-cluster-right">
             <g className="ashiyu-rock rock-four">
-              <path className="stone-body" d="M1080 502 L1099 463 L1151 432 L1204 461 L1230 498 L1191 526 L1129 523 Z" />
-              <path className="stone-facet" d="M1099 463 L1151 432 L1167 483 L1120 496 Z" />
+              <path className="stone-body" d="M1071 516 L1090 480 L1121 465 L1149 427 L1173 454 L1208 470 L1234 512 L1196 531 L1114 528 Z" />
+              <path className="stone-facet" d="M1090 480 L1121 465 L1149 427 L1157 487 L1110 506 Z" />
+              <path className="stone-facet stone-facet-soft" d="M1149 427 L1173 454 L1208 470 L1157 487 Z" />
             </g>
             <g className="ashiyu-rock rock-five">
-              <path className="stone-body" d="M992 510 L1015 474 L1060 457 L1108 476 L1124 510 L1078 533 L1028 527 Z" />
-              <path className="stone-facet" d="M1015 474 L1060 457 L1075 494 L1039 505 Z" />
+              <path className="stone-body" d="M975 522 L991 494 L1027 462 L1071 469 L1098 499 L1082 525 L1016 532 Z" />
+              <path className="stone-facet" d="M991 494 L1027 462 L1044 505 L1007 517 Z" />
             </g>
             <g className="ashiyu-rock rock-six stone-detail">
-              <path className="stone-body" d="M918 500 L937 467 L976 450 L1015 470 L1027 499 L990 516 L950 513 Z" />
-              <path className="stone-facet" d="M937 467 L976 450 L988 484 L955 494 Z" />
+              <path className="stone-body" d="M899 519 L918 490 L944 482 L958 445 L981 471 L1011 478 L1026 514 L990 528 L933 529 Z" />
+              <path className="stone-facet" d="M918 490 L944 482 L958 445 L970 496 L933 513 Z" />
+              <path className="stone-facet stone-facet-soft" d="M958 445 L981 471 L1011 478 L970 496 Z" />
             </g>
           </g>
         </svg>
