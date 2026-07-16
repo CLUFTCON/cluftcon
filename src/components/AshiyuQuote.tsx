@@ -116,9 +116,9 @@ export function AshiyuQuote() {
           <svg className="ashiyu-timber-frame" viewBox="0 0 1180 620" preserveAspectRatio="none">
             <defs>
               <linearGradient id="ashiyu-timber" x1="0" y1="0" x2="1" y2=".2">
-                <stop stopColor="#604b3e" />
-                <stop offset=".48" stopColor="#88705d" />
-                <stop offset="1" stopColor="#574438" />
+                <stop stopColor="var(--palette-cedar)" />
+                <stop offset=".48" stopColor="var(--palette-cedar-light)" />
+                <stop offset="1" stopColor="var(--palette-cedar-dark)" />
               </linearGradient>
             </defs>
             <path className="timber-post" d="M210 70 L242 74 L258 620 L219 620 Z" />
@@ -150,7 +150,7 @@ export function AshiyuQuote() {
           </filter>
           <filter id="ashiyu-caustic-light" x="-18%" y="-18%" width="136%" height="136%" colorInterpolationFilters="sRGB">
             <feTurbulence className="ashiyu-caustic-noise" type="fractalNoise" baseFrequency=".012 .028" numOctaves="2" seed="14" result="causticNoise" />
-            <feSpecularLighting in="causticNoise" surfaceScale="5" specularConstant="1.1" specularExponent="30" lightingColor="#fff1cf" result="causticSpecular">
+            <feSpecularLighting in="causticNoise" surfaceScale="5" specularConstant="1.1" specularExponent="30" lightingColor="var(--palette-caustic-light)" result="causticSpecular">
               <feDistantLight azimuth="228" elevation="56" />
             </feSpecularLighting>
             <feComponentTransfer in="causticSpecular" result="causticHighlights">

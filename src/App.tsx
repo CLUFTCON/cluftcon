@@ -5,6 +5,7 @@ import { AshiyuQuote } from '@/components/AshiyuQuote'
 import { Header } from '@/components/Header'
 import { InterestFormDrawer } from '@/components/InterestFormDrawer'
 import { LanguageTreeScene, type SceneMode } from '@/components/SakuraScene'
+import { VolunteerFormDrawer } from '@/components/VolunteerFormDrawer'
 
 const program = [
   { index: '01', title: 'Faculty keynotes', copy: 'Two to three invited talks opening new lines of inquiry.', state: 'Speakers forthcoming' },
@@ -40,11 +41,14 @@ function TreeModeControl({ mode, showCue, onChange }: { mode: SceneMode; showCue
 
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [volunteerDrawerOpen, setVolunteerDrawerOpen] = useState(false)
   const [sceneMode, setSceneMode] = useState<SceneMode>('bloom')
   const [showTreeCue, setShowTreeCue] = useState(false)
   const [treeCueDismissed, setTreeCueDismissed] = useState(false)
   const openDrawer = useCallback(() => setDrawerOpen(true), [])
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
+  const openVolunteerDrawer = useCallback(() => setVolunteerDrawerOpen(true), [])
+  const closeVolunteerDrawer = useCallback(() => setVolunteerDrawerOpen(false), [])
 
   useEffect(() => {
     if (treeCueDismissed) return
@@ -132,7 +136,7 @@ export default function App() {
           <div className="attend-copy"><SectionHeading eyebrow="04 · ATTEND" title="Come curious. Leave connected." copy="Whether you present or simply want to listen, add your name and we’ll send the next announcement." light /><p className="eligibility">Open to undergraduate students across Ontario.</p></div>
           <div className="attend-cards">
             <article className="join-card"><span>INTEREST LIST · OPEN</span><Sprout /><h3>Be first to know.</h3><p>This is not formal registration. Tell us where to reach you when tickets and submissions open.</p><button onClick={openDrawer}>Join the list <ArrowRight /></button></article>
-            <article className="volunteer-card"><span>VOLUNTEERS · COMING SOON</span><h3>Help the day bloom.</h3><p>We’ll soon recruit volunteers for guest welcome, poster support, photography, and room operations.</p><div>Signups opening later this year</div></article>
+            <article className="volunteer-card"><span>VOLUNTEERS · OPEN</span><h3>Help the day bloom.</h3><p>Join the team for guest welcome, presenter support, poster setup, photography, and room operations.</p><button onClick={openVolunteerDrawer}>Volunteer with us <ArrowRight /></button></article>
           </div>
         </section>
 
@@ -147,6 +151,7 @@ export default function App() {
 
       <footer><div><strong>CLUFTCON</strong><span>/ˈkləft.kɑn/</span></div><p>University of Toronto · September 24, 2026<br />Organized by CLCUOFT and UTMCLS</p><nav><a href="#story">Story</a><a href="#program">Program</a><a href="#attend">Attend</a><a href="#sponsors">Sponsors</a></nav><code>[ROOT → CLUFTCON_2026]</code></footer>
       <InterestFormDrawer open={drawerOpen} onClose={closeDrawer} />
+      <VolunteerFormDrawer open={volunteerDrawerOpen} onClose={closeVolunteerDrawer} />
     </div>
   )
 }

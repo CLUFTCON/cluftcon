@@ -1,0 +1,222 @@
+/*
+ * CLUFTCON colour system
+ *
+ * Palette tokens hold the actual colours. Semantic tokens below them describe
+ * where those colours are used. A new theme can override only the semantic
+ * layer under `[data-theme='…']` without changing component styles.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Core palette */
+  --palette-paper: #fff9f2;
+  --palette-paper-bright: #fffaf4;
+  --palette-white: #fff;
+  --palette-ink: #241923;
+  --palette-aubergine: #5f4858;
+  --palette-twilight: #211c35;
+  --palette-blush: #fbe7ea;
+  --palette-sakura: #f4a7b9;
+  --palette-rose-deep: #c95f7a;
+  --palette-moss: #667057;
+
+  /* Plum scale */
+  --palette-plum-1000: #171526;
+  --palette-plum-975: #18131e;
+  --palette-plum-950: #1d1928;
+  --palette-plum-925: #231823;
+  --palette-plum-900: #241c31;
+  --palette-plum-875: #282238;
+  --palette-plum-850: #292238;
+  --palette-plum-825: #2a2234;
+  --palette-plum-800: #37273a;
+  --palette-plum-775: #392f3e;
+  --palette-plum-750: #47384e;
+  --palette-plum-725: #49384e;
+  --palette-plum-700: #4b343e;
+  --palette-plum-675: #4c3742;
+  --palette-plum-650: #4f3843;
+  --palette-plum-625: #513442;
+  --palette-plum-600: #56485e;
+  --palette-plum-575: #59485e;
+  --palette-plum-550: #674751;
+  --palette-plum-525: #6d586d;
+  --palette-plum-500: #6e5e65;
+  --palette-plum-475: #723c53;
+  --palette-plum-450: #735863;
+  --palette-plum-425: #756279;
+  --palette-plum-400: #80606b;
+  --palette-plum-375: #816f78;
+  --palette-plum-350: #8a747d;
+  --palette-plum-325: #8b6870;
+  --palette-plum-300: #8c7882;
+  --palette-plum-275: #8f7788;
+  --palette-plum-250: #947e8e;
+  --palette-plum-225: #a391a4;
+  --palette-plum-200: #a997a4;
+  --palette-plum-190: #a997aa;
+  --palette-plum-180: #a997ac;
+  --palette-plum-175: #bbaab7;
+  --palette-plum-150: #c5b6c5;
+  --palette-plum-140: #c6b7bd;
+  --palette-plum-125: #c7b9c7;
+  --palette-plum-110: #cbbec3;
+  --palette-plum-100: #d5c6d1;
+  --palette-plum-75: #d9ced7;
+  --palette-plum-50: #e7d7df;
+  --palette-plum-25: #eee3e9;
+
+  /* Warm text neutrals */
+  --palette-copy-700: #6a5963;
+  --palette-copy-675: #6f5e67;
+  --palette-copy-650: #705e66;
+  --palette-copy-625: #725f67;
+  --palette-copy-600: #745f68;
+  --palette-copy-575: #75616b;
+  --palette-copy-550: #76656d;
+  --palette-copy-525: #76656e;
+  --palette-copy-500: #77656e;
+  --palette-copy-450: #86737c;
+
+  /* Sakura scale */
+  --palette-rose-950: #b95776;
+  --palette-rose-900: #c76680;
+  --palette-rose-850: #cf6986;
+  --palette-rose-800: #db849b;
+  --palette-rose-750: #d9849d;
+  --palette-rose-700: #e88ca4;
+  --palette-rose-650: #e994aa;
+  --palette-rose-600: #eaa8b8;
+  --palette-rose-575: #da7089;
+  --palette-rose-550: #ef9eb2;
+  --palette-rose-525: #f0a9ba;
+  --palette-rose-500: #f0acbc;
+  --palette-rose-475: #f2a8ba;
+  --palette-rose-450: #efb2c1;
+  --palette-rose-425: #f4a8ba;
+  --palette-rose-400: #f3c8d0;
+  --palette-rose-375: #f8c6d0;
+  --palette-rose-350: #f5c3cd;
+  --palette-rose-325: #e9cfd8;
+  --palette-rose-300: #f8e9eb;
+  --palette-rose-275: #fcecef;
+  --palette-rose-250: #fff7f5;
+  --palette-rose-225: #fff8f6;
+  --palette-rose-muted: #c9a9b6;
+  --palette-rose-branch-light: #c8a4ad;
+  --palette-rose-kicker: #ce91a4;
+  --palette-rose-mark: #d59aae;
+  --palette-rose-arc: #ba94a0;
+  --palette-rose-border: #dbb5c0;
+  --palette-rose-surface: #f6e5e6;
+  --palette-rose-funding: #f3c8d0;
+
+  /* Ashiyu: cedar, foliage, mineral water and stone */
+  --palette-cedar-dark: #574438;
+  --palette-cedar: #604b3e;
+  --palette-cedar-light: #88705d;
+  --palette-foliage-dark: #536a48;
+  --palette-foliage: #607451;
+  --palette-foliage-light: #748565;
+  --palette-moss-stone: #667257;
+  --palette-mineral-air: #e8eee6;
+  --palette-mineral-warm: #f7eee3;
+  --palette-mineral-water-top: #b8b1ad;
+  --palette-mineral-water-bottom: #999b9d;
+  --palette-wet-text: #49434a;
+  --palette-lantern-dark: #4f514d;
+  --palette-lantern-house: #777872;
+  --palette-lantern-stone: #85847e;
+  --palette-lantern-cap: #8b8983;
+  --palette-lantern-roof: #97958d;
+  --palette-stone-dark: #aeb3b2;
+  --palette-stone-mid: #bdc1c0;
+  --palette-stone-soft: #c9cccb;
+  --palette-stone-body: #d7d9d8;
+  --palette-stone-light: #e2e4e2;
+  --palette-caustic-light: #fff1cf;
+  --palette-moon: #fff5e8;
+
+  /* Borders */
+  --palette-border-strong: #d6c7c7;
+  --palette-border: #d6c8c8;
+  --palette-border-soft: #d8caca;
+  --palette-border-drawer: #d9cbca;
+  --palette-border-mobile: #dccdcd;
+
+  /* Frequently reused transparent colours */
+  --alpha-paper-92: rgba(255, 249, 242, .92);
+  --alpha-paper-72: rgba(255, 249, 242, .72);
+  --alpha-ink-13: rgba(36, 25, 35, .13);
+  --alpha-white-48: rgba(255, 255, 255, .48);
+  --alpha-white-42: rgba(255, 255, 255, .42);
+  --alpha-white-28: rgba(255, 255, 255, .28);
+  --alpha-white-22: rgba(255, 255, 255, .22);
+  --alpha-white-18: rgba(255, 255, 255, .18);
+  --alpha-white-17: rgba(255, 255, 255, .17);
+  --alpha-white-08: rgba(255, 255, 255, .08);
+  --alpha-white-07: rgba(255, 255, 255, .07);
+  --alpha-black-22: rgba(0, 0, 0, .22);
+  --alpha-black-13: rgba(0, 0, 0, .13);
+  --alpha-sakura-82: rgba(244, 167, 185, .82);
+  --alpha-sakura-24: rgba(244, 167, 185, .24);
+  --alpha-sakura-12: rgba(201, 95, 122, .12);
+  --alpha-sakura-10: rgba(244, 167, 185, .1);
+  --alpha-parse-edge: rgba(249, 210, 220, .62);
+  --alpha-overlay: rgba(18, 12, 20, .65);
+  --alpha-control: rgba(20, 16, 30, .58);
+  --alpha-card-border: rgba(87, 56, 69, .16);
+  --alpha-scene-border: rgba(82, 54, 66, .12);
+  --alpha-scene-shadow: rgba(45, 35, 31, .08);
+  --alpha-timber-stroke: rgba(67, 49, 40, .15);
+  --alpha-timber-seam: rgba(226, 204, 178, .22);
+  --alpha-foliage-left: rgba(91, 110, 76, .2);
+  --alpha-foliage-right: rgba(82, 103, 71, .18);
+  --alpha-lantern-stroke: rgba(69, 68, 64, .25);
+  --alpha-lantern-shadow: rgba(44, 42, 39, .1);
+  --alpha-steam: rgba(164, 131, 137, .2);
+  --alpha-water-top: rgba(173, 180, 179, .84);
+  --alpha-water-bottom: rgba(123, 128, 134, .92);
+  --alpha-basin-shadow: rgba(22, 16, 22, .18);
+  --alpha-stone-shadow: rgba(48, 42, 45, .08);
+  --alpha-stone-stroke: rgba(82, 88, 88, .2);
+  --alpha-caustic: rgba(255, 246, 220, .72);
+  --alpha-caustic-58: rgba(255, 247, 220, .58);
+  --alpha-caustic-50: rgba(255, 247, 220, .5);
+  --alpha-caustic-38: rgba(255, 247, 220, .38);
+  --alpha-ripple: rgba(255, 248, 235, .64);
+  --alpha-rim-shadow: rgba(47, 33, 39, .2);
+  --alpha-rim-highlight: rgba(255, 236, 226, .25);
+}
+
+/* Default semantic theme. Broad themes can redefine this small contract;
+ * art-directed variants can additionally override the relevant palette family
+ * (for example --palette-rose-* or --palette-mineral-*). */
+:root,
+[data-theme='sakura'] {
+  --color-page: var(--palette-paper);
+  --color-surface: var(--palette-paper);
+  --color-text: var(--palette-ink);
+  --color-text-muted: var(--palette-copy-675);
+  --color-accent: var(--palette-sakura);
+  --color-accent-strong: var(--palette-rose-deep);
+  --color-accent-soft: var(--palette-blush);
+  --color-dark-surface: var(--palette-twilight);
+  --color-on-dark: var(--palette-paper);
+  --color-quote: var(--palette-aubergine);
+  --color-border: var(--palette-border);
+}
+
+/* Backwards-compatible aliases; new component styles should use --color-* or
+ * the named palette families above. */
+:root {
+  --paper: var(--color-page);
+  --blush: var(--color-accent-soft);
+  --sakura: var(--color-accent);
+  --deep: var(--color-accent-strong);
+  --ink: var(--color-text);
+  --aubergine: var(--color-quote);
+  --twilight: var(--color-dark-surface);
+  --moss: var(--palette-moss);
+}

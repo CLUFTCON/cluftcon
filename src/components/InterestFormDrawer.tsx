@@ -1,50 +1,70 @@
-import { X } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { ArrowRight, Check } from 'lucide-react'
+import { type FormEvent, useCallback, useRef, useState } from 'react'
 
-const formSrc = 'https://docs.google.com/forms/d/e/1FAIpQLSd32eqEqzbXNA8jgYPph2oMqCnLf1LBQ_12K75LmNto8BJxWg/viewform?embedded=true'
+import { FormDrawerShell } from '@/components/FormDrawerShell'
+import { submitGoogleForm } from '@/lib/googleForms'
+
+const formId = '1FAIpQLSd32eqEqzbXNA8jgYPph2oMqCnLf1LBQ_12K75LmNto8BJxWg'
+const formUrl = `https://docs.google.com/forms/d/e/${formId}/viewform`
 
 export function InterestFormDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const closeButton = useRef<HTMLButtonElement>(null)
-  const panel = useRef<HTMLElement>(null)
+  const [email, setEmail] = useState('')
+  const [question, setQuestion] = useState('')
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const emailRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    if (!open) return
-    const prior = document.activeElement as HTMLElement | null
-    document.body.style.overflow = 'hidden'
-    closeButton.current?.focus()
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-      if (event.key !== 'Tab' || !panel.current) return
-      const focusable = Array.from(panel.current.querySelectorAll<HTMLElement>('button, iframe'))
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last?.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first?.focus()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', onKey)
-      prior?.focus()
-    }
-  }, [open, onClose])
+  const close = useCallback(() => {
+    setEmail('')
+    setQuestion('')
+    setStatus('idle')
+    onClose()
+  }, [onClose])
 
-  if (!open) return null
+  const submit = async (event: FormEvent) => {
+    event.preventDefault()
+    if (!emailRef.current?.checkValidity()) {
+      emailRef.current?.reportValidity()
+      emailRef.current?.focus()
+      return
+    }
+
+    setStatus('submitting')
+    try {
+      await submitGoogleForm(formId, { '895010099': email.trim(), '2057883278': question.trim() })
+      setStatus('success')
+    } catch {
+      setStatus('error')
+    }
+  }
+
   return (
-    <div className="drawer-layer" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
-      <section ref={panel} className="form-drawer" role="dialog" aria-modal="true" aria-labelledby="form-title">
-        <div className="drawer-head">
-          <div><span className="mono-kicker">ATTEND · 2026</span><h2 id="form-title">Join the interest list</h2></div>
-          <button ref={closeButton} onClick={onClose} aria-label="Close interest form"><X /></button>
+    <FormDrawerShell open={open} onClose={close} eyebrow="ATTEND · 2026" title="Join the interest list" titleId="interest-form-title">
+      {status === 'success' ? (
+        <div className="form-success" role="status" tabIndex={-1}>
+          <Check aria-hidden />
+          <h3>You’re on the list.</h3>
+          <p>Your response was sent to the CLUFTCON organizers. We’ll be in touch when registration and submissions open.</p>
+          <button className="form-submit" type="button" onClick={close}>Done</button>
         </div>
-        <p>Leave your email and we’ll let you know when formal registration opens.</p>
-        <iframe src={formSrc} title="CLUFTCON interest form" loading="lazy">Loading…</iframe>
-      </section>
-    </div>
+      ) : (
+        <>
+          <p>Leave your email and we’ll let you know when formal registration opens.</p>
+          <form className="custom-google-form" onSubmit={submit} noValidate>
+            <label className="form-field">
+              <span>Email address <i>Required</i></span>
+              <input ref={emailRef} type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
+            </label>
+            <label className="form-field">
+              <span>Questions or requests <i>Optional</i></span>
+              <textarea rows={5} maxLength={500} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Anything you’d like the organizers to know?" />
+              <small>{question.length} / 500</small>
+            </label>
+            {status === 'error' && <p className="form-error" role="alert">We couldn’t send this response. Please use the Google Form link below.</p>}
+            <button className="form-submit" type="submit" disabled={status === 'submitting'}>{status === 'submitting' ? 'Sending…' : <>Join the list <ArrowRight /></>}</button>
+          </form>
+          <p className="form-provider-note">Responses are stored in Google Forms. <a href={formUrl} target="_blank" rel="noreferrer">Open the original form</a>.</p>
+        </>
+      )}
+    </FormDrawerShell>
   )
 }

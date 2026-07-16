@@ -324,11 +324,11 @@ export function LanguageTreeScene({ mode }: { mode: SceneMode }) {
       <title id="tree-title">{mode === 'bloom' ? 'A flowering language tree' : 'A dependency tree for an original haiku'}</title>
       <desc id="tree-description">{mode === 'bloom' ? 'An elegant sakura tree with text-free blossoms and windblown petals.' : 'Pink petals drifting through the branches of language carry meanings home. The words are arranged as a Universal Dependencies tree rooted at carry.'}</desc>
       <defs>
-        <linearGradient id="branch-gradient" x1="0" y1="1" x2=".72" y2="0"><stop stopColor="#231823"/><stop offset=".55" stopColor="#513442"/><stop offset="1" stopColor="#80606b"/></linearGradient>
-        <linearGradient id="branch-light" x1="0" y1="0" x2="1" y2="0"><stop stopColor="#c8a4ad" stopOpacity=".34"/><stop offset="1" stopColor="#c8a4ad" stopOpacity="0"/></linearGradient>
-        <radialGradient id="bloom-one"><stop stopColor="#fff7f5"/><stop offset=".48" stopColor="#f8c6d0"/><stop offset="1" stopColor="#e88ca4"/></radialGradient>
-        <radialGradient id="bloom-two"><stop stopColor="#fff8f6"/><stop offset=".55" stopColor="#f4a8ba"/><stop offset="1" stopColor="#cf6986"/></radialGradient>
-        <radialGradient id="bloom-three"><stop stopColor="#fcecef"/><stop offset=".56" stopColor="#e994aa"/><stop offset="1" stopColor="#b95776"/></radialGradient>
+        <linearGradient id="branch-gradient" x1="0" y1="1" x2=".72" y2="0"><stop stopColor="var(--palette-plum-925)"/><stop offset=".55" stopColor="var(--palette-plum-625)"/><stop offset="1" stopColor="var(--palette-plum-400)"/></linearGradient>
+        <linearGradient id="branch-light" x1="0" y1="0" x2="1" y2="0"><stop stopColor="var(--palette-rose-branch-light)" stopOpacity=".34"/><stop offset="1" stopColor="var(--palette-rose-branch-light)" stopOpacity="0"/></linearGradient>
+        <radialGradient id="bloom-one"><stop stopColor="var(--palette-rose-250)"/><stop offset=".48" stopColor="var(--palette-rose-375)"/><stop offset="1" stopColor="var(--palette-rose-700)"/></radialGradient>
+        <radialGradient id="bloom-two"><stop stopColor="var(--palette-rose-225)"/><stop offset=".55" stopColor="var(--palette-rose-425)"/><stop offset="1" stopColor="var(--palette-rose-850)"/></radialGradient>
+        <radialGradient id="bloom-three"><stop stopColor="var(--palette-rose-275)"/><stop offset=".56" stopColor="var(--palette-rose-650)"/><stop offset="1" stopColor="var(--palette-rose-950)"/></radialGradient>
         <filter id="moon-soft"><feGaussianBlur stdDeviation="22" /></filter>
         <path id="petal-0" d="M0 1 C-10 -7 -13 -23 -7 -35 C-3 -43 0 -49 0 -55 C4 -48 9 -42 12 -34 C17 -21 12 -7 0 1Z" />
         <path id="petal-1" d="M0 1 C-13 -6 -18 -20 -13 -33 C-9 -44 -3 -48 1 -57 C5 -49 14 -42 16 -31 C19 -18 12 -6 0 1Z" />
