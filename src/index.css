@@ -258,10 +258,11 @@ footer > div { display: flex; flex-direction: column; }footer strong { font: 400
 @media (max-width: 600px) {
   .nav-shell, .hero-copy { width: calc(100% - 36px); }.nav-shell { height: 66px; }.mobile-nav { inset-block-start: 66px; height: calc(100svh - 66px); }
   .hero { min-height: 1020px; }.hero-copy { padding-top: 116px; }.hero h1 { font-size: clamp(57px, 18vw, 77px); }.hero-copy > p { font-size: 16px; width: 83%; }.hero-actions { align-items: flex-start; flex-direction: column; }.button { min-height: 44px; }.hero-colophon { z-index: 9; top: 900px; gap: 25px; }.hero-colophon div { grid-template-columns: 1fr; gap: 5px; }.scroll-note { display: none; }
-  .mobile-tree-experience { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; display: block; height: 360px; pointer-events: none; }
+  .mobile-tree-experience { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; display: block; height: 480px; pointer-events: none; }
   .mobile-tree-experience.is-open { pointer-events: auto; }
-  .mobile-tree-sheet { pointer-events: auto; }
-  .mobile-tree-experience:not(.is-open) .mobile-tree-canvas { mask-image: linear-gradient(to bottom, #000 0 72%, transparent 100%); }
+  .mobile-tree-sheet { height: 480px; pointer-events: auto; }
+  .mobile-tree-experience:not(.is-open) .mobile-tree-sheet { overflow: visible; }
+  .mobile-tree-experience:not(.is-open) .mobile-tree-canvas { mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 72%, transparent 100%); }
   .mobile-tree-experience.show-cue:not(.is-open) .mobile-tree-canvas { animation: mobile-tree-cue 1.4s ease-in-out 2; }
   .mobile-tree-experience.show-cue:not(.is-open) .mobile-tree-expander-visual { animation: mobile-tree-chevron 1.4s ease-in-out 2; }
   @keyframes mobile-tree-cue { 45% { transform: translateY(-5px) scale(1.015); } }
