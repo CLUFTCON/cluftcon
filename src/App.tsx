@@ -1,5 +1,5 @@
-import { ArrowDown, ArrowRight, CalendarDays, Mail, MapPin, Sprout, Users } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { ArrowDown, ArrowRight, CalendarDays, ChevronDown, ChevronUp, Mail, MapPin, Sprout, Users } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { AshiyuQuote } from '@/components/AshiyuQuote'
 import { Header } from '@/components/Header'
@@ -30,10 +30,108 @@ function TreeModeControl({ mode, showCue, onChange }: { mode: SceneMode; showCue
         <span>Two ways to read a tree</span>
         <svg viewBox="0 0 58 18"><path d="M1 4 C20 3 31 7 50 13"/><path d="M43 14 L51 13 L48 7"/></svg>
       </div>
-      <div className="mode-segmented" role="group" aria-label="Read the tree">
-        <span>Read the tree</span>
-        <button type="button" aria-pressed={mode === 'bloom'} onClick={() => onChange('bloom')}>Bloom</button>
-        <button className="parse-option" type="button" aria-pressed={mode === 'parse'} onClick={() => onChange('parse')}>Parse</button>
+      <TreeModeButtons mode={mode} onChange={onChange} />
+    </div>
+  )
+}
+
+function TreeModeButtons({ mode, onChange }: { mode: SceneMode; onChange: (value: SceneMode) => void }) {
+  return (
+    <div className="mode-segmented" role="group" aria-label="Read the tree">
+      <span>Read the tree</span>
+      <button type="button" aria-pressed={mode === 'bloom'} onClick={() => onChange('bloom')}>Bloom</button>
+      <button className="parse-option" type="button" aria-pressed={mode === 'parse'} onClick={() => onChange('parse')}>Parse</button>
+    </div>
+  )
+}
+
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query)
+    const updateMatch = (event: MediaQueryListEvent) => setMatches(event.matches)
+    mediaQuery.addEventListener('change', updateMatch)
+    return () => mediaQuery.removeEventListener('change', updateMatch)
+  }, [query])
+
+  return matches
+}
+
+function MobileTreeDrawer({
+  open,
+  mode,
+  onChange,
+  onClose,
+}: {
+  open: boolean
+  mode: SceneMode
+  onChange: (value: SceneMode) => void
+  onClose: () => void
+}) {
+  const sheet = useRef<HTMLDivElement>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeButton.current?.focus()
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !sheet.current) return
+      const focusable = Array.from(sheet.current.querySelectorAll<HTMLElement>('button:not([disabled])'))
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+      previouslyFocused?.focus()
+    }
+  }, [onClose, open])
+
+  if (!open) return null
+
+  return (
+    <div className="mobile-tree-layer" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <div className="mobile-tree-sheet" ref={sheet} role="dialog" aria-modal="true" aria-labelledby="mobile-tree-title">
+        <div className="mobile-tree-sheet-head">
+          <div>
+            <span>Two ways to read a tree</span>
+            <h2 id="mobile-tree-title">{mode === 'bloom' ? 'Sakura in bloom' : 'Haiku, parsed'}</h2>
+          </div>
+          <button ref={closeButton} className="mobile-tree-close" type="button" onClick={onClose} aria-label="Close tree drawer">
+            <ChevronDown />
+          </button>
+        </div>
+        <TreeModeButtons mode={mode} onChange={onChange} />
+        <div className="mobile-tree-canvas">
+          <LanguageTreeScene mode={mode} presentation="drawer" />
+        </div>
+        <p className="mobile-tree-caption">
+          {mode === 'bloom'
+            ? 'A botanical tree shaped by language.'
+            : 'An original haiku arranged by Universal Dependencies.'}
+        </p>
+        <span className="sr-only" aria-live="polite">
+          {mode === 'bloom' ? 'Bloom view: animated sakura tree.' : 'Parse view: Universal Dependencies tree for the haiku.'}
+        </span>
       </div>
     </div>
   )
@@ -42,9 +140,17 @@ function TreeModeControl({ mode, showCue, onChange }: { mode: SceneMode; showCue
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [volunteerDrawerOpen, setVolunteerDrawerOpen] = useState(false)
+  const [mobileTreeOpen, setMobileTreeOpen] = useState(false)
   const [sceneMode, setSceneMode] = useState<SceneMode>('bloom')
   const [showTreeCue, setShowTreeCue] = useState(false)
-  const [treeCueDismissed, setTreeCueDismissed] = useState(false)
+  const [treeCueDismissed, setTreeCueDismissed] = useState(() => {
+    try {
+      return window.localStorage.getItem('cluftcon-tree-discovered') === 'true'
+    } catch {
+      return false
+    }
+  })
+  const isMobile = useMediaQuery('(max-width: 600px)')
   const openDrawer = useCallback(() => setDrawerOpen(true), [])
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
   const openVolunteerDrawer = useCallback(() => setVolunteerDrawerOpen(true), [])
@@ -60,7 +166,25 @@ export default function App() {
     setSceneMode(mode)
     setShowTreeCue(false)
     setTreeCueDismissed(true)
+    try {
+      window.localStorage.setItem('cluftcon-tree-discovered', 'true')
+    } catch {
+      // Discovery persistence is supplementary.
+    }
   }, [])
+
+  const openMobileTree = useCallback(() => {
+    setMobileTreeOpen(true)
+    setShowTreeCue(false)
+    setTreeCueDismissed(true)
+    try {
+      window.localStorage.setItem('cluftcon-tree-discovered', 'true')
+    } catch {
+      // The drawer remains fully usable when storage is unavailable.
+    }
+  }, [])
+
+  const closeMobileTree = useCallback(() => setMobileTreeOpen(false), [])
 
   return (
     <div className="site-frame" id="top">
@@ -81,11 +205,27 @@ export default function App() {
               <div><dt>Place</dt><dd>Bahen Centre atrium<br />U of T, St. George</dd></div>
             </dl>
           </div>
-          <div className={`hero-art ${sceneMode === 'parse' ? 'is-parse' : ''}`}>
-            <LanguageTreeScene mode={sceneMode} />
-          </div>
-          <TreeModeControl mode={sceneMode} showCue={showTreeCue} onChange={changeSceneMode} />
-          <span className="sr-only" aria-live="polite">{sceneMode === 'bloom' ? 'Bloom view: animated sakura tree.' : 'Parse view: Universal Dependencies tree for the haiku.'}</span>
+          {isMobile ? (
+            <button
+              className={`mobile-tree-trigger ${showTreeCue ? 'show-cue' : ''}`}
+              type="button"
+              onClick={openMobileTree}
+              aria-expanded={mobileTreeOpen}
+              aria-controls="mobile-tree-drawer"
+            >
+              <span><small>Bloom ↔ Parse</small><strong>Read the tree</strong></span>
+              <span className="mobile-tree-trigger-cue" aria-hidden>Open the full tree</span>
+              <ChevronUp aria-hidden />
+            </button>
+          ) : (
+            <>
+              <div className={`hero-art ${sceneMode === 'parse' ? 'is-parse' : ''}`}>
+                <LanguageTreeScene mode={sceneMode} />
+              </div>
+              <TreeModeControl mode={sceneMode} showCue={showTreeCue} onChange={changeSceneMode} />
+              <span className="sr-only" aria-live="polite">{sceneMode === 'bloom' ? 'Bloom view: animated sakura tree.' : 'Parse view: Universal Dependencies tree for the haiku.'}</span>
+            </>
+          )}
           <div className="scroll-note"><span>Scroll to trace the sentence</span></div>
         </section>
 
@@ -152,6 +292,7 @@ export default function App() {
       <footer><div><strong>CLUFTCON</strong><span>/ˈkləft.kɑn/</span></div><p>University of Toronto · September 24, 2026<br />Organized by CLCUOFT and UTMCLS</p><nav><a href="#story">Story</a><a href="#program">Program</a><a href="#attend">Attend</a><a href="#sponsors">Sponsors</a></nav><code>[ROOT → CLUFTCON_2026]</code></footer>
       <InterestFormDrawer open={drawerOpen} onClose={closeDrawer} />
       <VolunteerFormDrawer open={volunteerDrawerOpen} onClose={closeVolunteerDrawer} />
+      {isMobile && <div id="mobile-tree-drawer"><MobileTreeDrawer open={mobileTreeOpen} mode={sceneMode} onChange={changeSceneMode} onClose={closeMobileTree} /></div>}
     </div>
   )
 }

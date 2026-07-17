@@ -241,14 +241,20 @@ function DependencyTree({ tokens, layout }: { tokens: ParseToken[]; layout: 'des
   )
 }
 
-export function LanguageTreeScene({ mode }: { mode: SceneMode }) {
+export function LanguageTreeScene({ mode, presentation = 'hero' }: { mode: SceneMode; presentation?: 'hero' | 'drawer' }) {
   const root = useRef<SVGSVGElement>(null)
   const previousMode = useRef<SceneMode | null>(null)
 
   useLayoutEffect(() => {
     if (!root.current) return
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const parseLayout = window.matchMedia('(max-width: 600px)').matches ? '.parse-tree-mobile' : window.matchMedia('(max-width: 900px)').matches ? '.parse-tree-tablet' : '.parse-tree-desktop'
+    const parseLayout = presentation === 'drawer'
+      ? '.parse-tree-desktop'
+      : window.matchMedia('(max-width: 600px)').matches
+        ? '.parse-tree-mobile'
+        : window.matchMedia('(max-width: 900px)').matches
+          ? '.parse-tree-tablet'
+          : '.parse-tree-desktop'
     const priorMode = previousMode.current
     const context = gsap.context(() => {
       if (reducedMotion) {
@@ -317,10 +323,17 @@ export function LanguageTreeScene({ mode }: { mode: SceneMode }) {
     }, root)
     previousMode.current = mode
     return () => context.revert()
-  }, [mode])
+  }, [mode, presentation])
 
   return (
-    <svg ref={root} className={`language-tree-scene mode-${mode}`} viewBox="0 0 1280 780" role="img" aria-labelledby="tree-title tree-description">
+    <svg
+      ref={root}
+      className={`language-tree-scene mode-${mode} presentation-${presentation}`}
+      viewBox={presentation === 'drawer' ? '390 0 820 780' : '0 0 1280 780'}
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-labelledby="tree-title tree-description"
+    >
       <title id="tree-title">{mode === 'bloom' ? 'A flowering language tree' : 'A dependency tree for an original haiku'}</title>
       <desc id="tree-description">{mode === 'bloom' ? 'An elegant sakura tree with text-free blossoms and windblown petals.' : 'Pink petals drifting through the branches of language carry meanings home. The words are arranged as a Universal Dependencies tree rooted at carry.'}</desc>
       <defs>
