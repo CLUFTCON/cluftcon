@@ -1,11 +1,15 @@
-import { ArrowDown, ArrowRight, CalendarDays, ChevronDown, ChevronUp, Mail, MapPin, Sprout, Users } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { ArrowDown, ArrowRight, CalendarDays, ChevronUp, Mail, MapPin, Sprout, Users } from 'lucide-react'
+import gsap from 'gsap'
+import { Flip } from 'gsap/Flip'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { AshiyuQuote } from '@/components/AshiyuQuote'
 import { Header } from '@/components/Header'
 import { InterestFormDrawer } from '@/components/InterestFormDrawer'
 import { LanguageTreeScene, type SceneMode } from '@/components/SakuraScene'
 import { VolunteerFormDrawer } from '@/components/VolunteerFormDrawer'
+
+gsap.registerPlugin(Flip)
 
 const program = [
   { index: '01', title: 'Faculty keynotes', copy: 'Two to three invited talks opening new lines of inquiry.', state: 'Speakers forthcoming' },
@@ -35,12 +39,12 @@ function TreeModeControl({ mode, showCue, onChange }: { mode: SceneMode; showCue
   )
 }
 
-function TreeModeButtons({ mode, onChange }: { mode: SceneMode; onChange: (value: SceneMode) => void }) {
+function TreeModeButtons({ mode, onChange, disabled = false }: { mode: SceneMode; onChange: (value: SceneMode) => void; disabled?: boolean }) {
   return (
     <div className="mode-segmented" role="group" aria-label="Read the tree">
       <span>Read the tree</span>
-      <button type="button" aria-pressed={mode === 'bloom'} onClick={() => onChange('bloom')}>Bloom</button>
-      <button className="parse-option" type="button" aria-pressed={mode === 'parse'} onClick={() => onChange('parse')}>Parse</button>
+      <button type="button" disabled={disabled} aria-pressed={mode === 'bloom'} onClick={() => onChange('bloom')}>Bloom</button>
+      <button className="parse-option" type="button" disabled={disabled} aria-pressed={mode === 'parse'} onClick={() => onChange('parse')}>Parse</button>
     </div>
   )
 }
@@ -58,89 +62,98 @@ function useMediaQuery(query: string) {
   return matches
 }
 
-const teaserBlooms = [
-  [52, 80, .7, -12],
-  [83, 97, .54, 18],
-  [110, 59, .64, 8],
-  [137, 82, .48, -18],
-  [164, 48, .6, 14],
-  [187, 75, .46, -9],
-  [213, 38, .55, 21],
-] as const
-
-function MobileTreeTeaser({ showCue, open, onOpen }: { showCue: boolean; open: boolean; onOpen: () => void }) {
-  return (
-    <button
-      className={`mobile-tree-trigger ${showCue ? 'show-cue' : ''}`}
-      type="button"
-      onClick={onOpen}
-      aria-label="Open the language tree"
-      aria-expanded={open}
-      aria-controls="mobile-tree-drawer"
-    >
-      <svg className="mobile-tree-teaser-art" viewBox="0 0 270 225" aria-hidden>
-        <defs>
-          <linearGradient id="mobile-teaser-branch" x1="1" y1="1" x2=".12" y2=".12">
-            <stop stopColor="var(--palette-plum-625)" />
-            <stop offset=".58" stopColor="var(--palette-plum-475)" />
-            <stop offset="1" stopColor="var(--palette-plum-325)" />
-          </linearGradient>
-          <radialGradient id="mobile-teaser-bloom">
-            <stop stopColor="var(--palette-rose-225)" />
-            <stop offset=".55" stopColor="var(--palette-rose-425)" />
-            <stop offset="1" stopColor="var(--palette-rose-850)" />
-          </radialGradient>
-          <path id="mobile-teaser-petal" d="M0 1 C-8 -5 -11 -17 -7 -27 C-4 -35 0 -39 0 -44 C4 -38 8 -33 10 -26 C14 -16 10 -5 0 1Z" />
-        </defs>
-        <g className="mobile-tree-teaser-canopy">
-          <path className="mobile-tree-teaser-branch" d="M282 211 C239 197 220 174 199 143 C174 108 140 92 91 88 L94 99 C139 105 166 120 185 151 C207 187 235 214 276 224Z" />
-          <path className="mobile-tree-teaser-branch branch-fine" d="M205 155 C183 118 178 79 211 36 L218 42 C190 82 193 116 214 150Z" />
-          <path className="mobile-tree-teaser-branch branch-fine" d="M175 119 C151 91 125 74 98 58 L102 65 C128 83 148 99 168 126Z" />
-          <path className="mobile-tree-teaser-branch branch-fine" d="M141 101 C113 101 82 90 54 69 L58 78 C83 99 111 110 142 109Z" />
-          {teaserBlooms.map(([x, y, scale, rotation], bloomIndex) => (
-            <g className="mobile-tree-teaser-bloom" transform={`translate(${x} ${y}) rotate(${rotation}) scale(${scale})`} key={bloomIndex}>
-              {Array.from({ length: 5 }, (_, petalIndex) => (
-                <use href="#mobile-teaser-petal" transform={`rotate(${petalIndex * 72}) translate(0 -4)`} key={petalIndex} />
-              ))}
-              <circle r="3.5" />
-            </g>
-          ))}
-          <use className="mobile-tree-teaser-loose-petal" href="#mobile-teaser-petal" transform="translate(117 145) rotate(54) scale(.42)" />
-          <use className="mobile-tree-teaser-loose-petal second" href="#mobile-teaser-petal" transform="translate(59 132) rotate(-28) scale(.32)" />
-        </g>
-      </svg>
-      <span className="mobile-tree-teaser-action" aria-hidden>
-        <small>Bloom / Parse</small>
-        <i><ChevronUp /></i>
-      </span>
-    </button>
-  )
-}
-
-function MobileTreeDrawer({
-  open,
+function MobileTreeExperience({
   mode,
+  showCue,
   onChange,
-  onClose,
+  onDiscover,
 }: {
-  open: boolean
   mode: SceneMode
+  showCue: boolean
   onChange: (value: SceneMode) => void
-  onClose: () => void
+  onDiscover: () => void
 }) {
+  const [open, setOpen] = useState(false)
+  const root = useRef<HTMLDivElement>(null)
   const sheet = useRef<HTMLDivElement>(null)
-  const closeButton = useRef<HTMLButtonElement>(null)
+  const scene = useRef<HTMLDivElement>(null)
+  const backdrop = useRef<HTMLDivElement>(null)
+  const surface = useRef<HTMLDivElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  const expander = useRef<HTMLButtonElement>(null)
+  const expanderVisual = useRef<HTMLSpanElement>(null)
+  const expanderIcon = useRef<SVGSVGElement>(null)
+  const flipState = useRef<ReturnType<typeof Flip.getState> | null>(null)
+  const transition = useRef<gsap.core.Timeline | null>(null)
+  const transitioning = useRef(false)
+
+  useLayoutEffect(() => {
+    const state = flipState.current
+    if (!state || !sheet.current || !scene.current || !expanderVisual.current) return
+    flipState.current = null
+    transition.current?.kill()
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (reducedMotion) {
+      transitioning.current = false
+      const effectTargets = [backdrop.current, surface.current, panel.current, expanderIcon.current].filter(Boolean) as Element[]
+      gsap.set(effectTargets, { clearProps: 'all' })
+      return
+    }
+
+    Flip.from(state, {
+      absolute: true,
+      duration: .72,
+      ease: 'power3.inOut',
+      nested: true,
+      scale: true,
+    })
+    const timeline = gsap.timeline({
+      onComplete: () => {
+        transitioning.current = false
+        transition.current = null
+        gsap.set([backdrop.current, surface.current, panel.current, expanderIcon.current], { clearProps: 'all' })
+      },
+    })
+      .fromTo(backdrop.current, { opacity: open ? 0 : 1 }, { opacity: open ? 1 : 0, duration: .32, ease: 'power1.out' }, 0)
+      .fromTo(surface.current, { opacity: open ? 0 : 1 }, { opacity: open ? 1 : 0, duration: .5, ease: 'power1.inOut' }, open ? .08 : 0)
+      .fromTo(panel.current, { opacity: open ? 0 : 1, y: open ? 12 : 0 }, { opacity: open ? 1 : 0, y: open ? 0 : 8, duration: .34, ease: 'power2.out' }, open ? .28 : 0)
+      .fromTo(expanderIcon.current, { rotation: open ? 0 : 180 }, { rotation: open ? 180 : 0, duration: .46, ease: 'power2.inOut' }, .08)
+      .to({}, { duration: .72 }, 0)
+
+    transition.current = timeline
+    return () => {
+      timeline.kill()
+    }
+  }, [open])
+
+  const toggle = useCallback(() => {
+    if (transitioning.current || !sheet.current || !scene.current || !expanderVisual.current) return
+    transitioning.current = true
+    flipState.current = Flip.getState([sheet.current, scene.current, expanderVisual.current])
+    if (open) {
+      if (mode !== 'bloom') onChange('bloom')
+      setOpen(false)
+    } else {
+      onDiscover()
+      setOpen(true)
+    }
+  }, [mode, onChange, onDiscover, open])
+  const toggleRef = useRef(toggle)
+  useEffect(() => {
+    toggleRef.current = toggle
+  }, [toggle])
 
   useEffect(() => {
     if (!open) return
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const expanderElement = expander.current
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    closeButton.current?.focus()
+    expanderElement?.focus()
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose()
+        toggleRef.current()
         return
       }
       if (event.key !== 'Tab' || !sheet.current) return
@@ -161,36 +174,72 @@ function MobileTreeDrawer({
     return () => {
       document.body.style.overflow = previousOverflow
       document.removeEventListener('keydown', handleKeyDown)
-      previouslyFocused?.focus()
+      expanderElement?.focus()
     }
-  }, [onClose, open])
+  }, [open])
 
-  if (!open) return null
+  useEffect(() => {
+    const cancelTransition = () => {
+      transition.current?.kill()
+      transition.current = null
+      transitioning.current = false
+      const flipTargets = [sheet.current, scene.current, expanderVisual.current].filter(Boolean) as Element[]
+      const effectTargets = [sheet.current, scene.current, expanderVisual.current, backdrop.current, surface.current, panel.current, expanderIcon.current].filter(Boolean) as Element[]
+      if (flipTargets.length) Flip.killFlipsOf(flipTargets)
+      if (effectTargets.length) gsap.set(effectTargets, { clearProps: 'all' })
+    }
+    window.addEventListener('resize', cancelTransition)
+    return () => {
+      window.removeEventListener('resize', cancelTransition)
+      cancelTransition()
+    }
+  }, [])
 
   return (
-    <div className="mobile-tree-layer" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <div className="mobile-tree-sheet" ref={sheet} role="dialog" aria-modal="true" aria-labelledby="mobile-tree-title">
-        <div className="mobile-tree-sheet-head">
-          <div>
-            <span>Two ways to read a tree</span>
-            <h2 id="mobile-tree-title">{mode === 'bloom' ? 'Sakura in bloom' : 'Haiku, parsed'}</h2>
-          </div>
-          <button ref={closeButton} className="mobile-tree-close" type="button" onClick={onClose} aria-label="Close tree drawer">
-            <ChevronDown />
-          </button>
-        </div>
-        <TreeModeButtons mode={mode} onChange={onChange} />
-        <div className="mobile-tree-canvas">
+    <div ref={root} className={`mobile-tree-experience ${open ? 'is-open' : ''} ${showCue ? 'show-cue' : ''}`}>
+      <div ref={backdrop} className="mobile-tree-backdrop" aria-hidden onMouseDown={() => open && toggle()} />
+      <div
+        ref={sheet}
+        className="mobile-tree-sheet"
+        role={open ? 'dialog' : undefined}
+        aria-modal={open ? true : undefined}
+        aria-labelledby={open ? 'mobile-tree-title' : undefined}
+      >
+        <div ref={surface} className="mobile-tree-surface" aria-hidden />
+        <div ref={scene} className="mobile-tree-canvas">
           <LanguageTreeScene mode={mode} presentation="drawer" />
         </div>
-        <p className="mobile-tree-caption">
-          {mode === 'bloom'
-            ? 'A botanical tree shaped by language.'
-            : 'An original haiku arranged by Universal Dependencies.'}
-        </p>
-        <span className="sr-only" aria-live="polite">
-          {mode === 'bloom' ? 'Bloom view: animated sakura tree.' : 'Parse view: Universal Dependencies tree for the haiku.'}
-        </span>
+        <div ref={panel} className="mobile-tree-panel" id="mobile-tree-panel" aria-hidden={!open} inert={open ? undefined : true}>
+          <div className="mobile-tree-sheet-head">
+            <div>
+              <span>Two ways to read a tree</span>
+              <h2 id="mobile-tree-title">{mode === 'bloom' ? 'Sakura in bloom' : 'Haiku, parsed'}</h2>
+            </div>
+          </div>
+          <TreeModeButtons mode={mode} onChange={onChange} disabled={!open} />
+          <p className="mobile-tree-caption">
+            {mode === 'bloom'
+              ? 'A botanical tree shaped by language.'
+              : 'An original haiku arranged by Universal Dependencies.'}
+          </p>
+          <span className="sr-only" aria-live="polite">
+            {mode === 'bloom' ? 'Bloom view: animated sakura tree.' : 'Parse view: Universal Dependencies tree for the haiku.'}
+          </span>
+        </div>
+        <button
+          ref={expander}
+          className="mobile-tree-expander"
+          type="button"
+          onClick={toggle}
+          aria-label={open ? 'Close the language tree' : 'Open the language tree'}
+          aria-expanded={open}
+          aria-controls="mobile-tree-panel"
+        >
+          <small aria-hidden>Bloom / Parse</small>
+          <span ref={expanderVisual} className="mobile-tree-expander-visual" aria-hidden>
+            <ChevronUp ref={expanderIcon} />
+          </span>
+        </button>
       </div>
     </div>
   )
@@ -199,7 +248,6 @@ function MobileTreeDrawer({
 export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [volunteerDrawerOpen, setVolunteerDrawerOpen] = useState(false)
-  const [mobileTreeOpen, setMobileTreeOpen] = useState(false)
   const [sceneMode, setSceneMode] = useState<SceneMode>('bloom')
   const [showTreeCue, setShowTreeCue] = useState(false)
   const [treeCueDismissed, setTreeCueDismissed] = useState(() => {
@@ -221,8 +269,7 @@ export default function App() {
     return () => window.clearTimeout(cueTimer)
   }, [treeCueDismissed])
 
-  const changeSceneMode = useCallback((mode: SceneMode) => {
-    setSceneMode(mode)
+  const discoverTree = useCallback(() => {
     setShowTreeCue(false)
     setTreeCueDismissed(true)
     try {
@@ -232,18 +279,10 @@ export default function App() {
     }
   }, [])
 
-  const openMobileTree = useCallback(() => {
-    setMobileTreeOpen(true)
-    setShowTreeCue(false)
-    setTreeCueDismissed(true)
-    try {
-      window.localStorage.setItem('cluftcon-tree-discovered', 'true')
-    } catch {
-      // The drawer remains fully usable when storage is unavailable.
-    }
-  }, [])
-
-  const closeMobileTree = useCallback(() => setMobileTreeOpen(false), [])
+  const changeSceneMode = useCallback((mode: SceneMode) => {
+    setSceneMode(mode)
+    discoverTree()
+  }, [discoverTree])
 
   return (
     <div className="site-frame" id="top">
@@ -265,7 +304,7 @@ export default function App() {
             </dl>
           </div>
           {isMobile ? (
-            <MobileTreeTeaser showCue={showTreeCue} open={mobileTreeOpen} onOpen={openMobileTree} />
+            <MobileTreeExperience mode={sceneMode} showCue={showTreeCue} onChange={changeSceneMode} onDiscover={discoverTree} />
           ) : (
             <>
               <div className={`hero-art ${sceneMode === 'parse' ? 'is-parse' : ''}`}>
@@ -341,7 +380,6 @@ export default function App() {
       <footer><div><strong>CLUFTCON</strong><span>/ˈkləft.kɑn/</span></div><p>University of Toronto · September 24, 2026<br />Organized by CLCUOFT and UTMCLS</p><nav><a href="#story">Story</a><a href="#program">Program</a><a href="#attend">Attend</a><a href="#sponsors">Sponsors</a></nav><code>[ROOT → CLUFTCON_2026]</code></footer>
       <InterestFormDrawer open={drawerOpen} onClose={closeDrawer} />
       <VolunteerFormDrawer open={volunteerDrawerOpen} onClose={closeVolunteerDrawer} />
-      {isMobile && <div id="mobile-tree-drawer"><MobileTreeDrawer open={mobileTreeOpen} mode={sceneMode} onChange={changeSceneMode} onClose={closeMobileTree} /></div>}
     </div>
   )
 }
